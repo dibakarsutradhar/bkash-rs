@@ -73,6 +73,14 @@ impl Bkash {
     pub fn token_cache(&self) -> &TokenCache {
         self.inner.transport.token_cache()
     }
+
+    /// Access the Tokenized Checkout product accessor.
+    #[cfg(feature = "tokenized-checkout")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "tokenized-checkout")))]
+    #[must_use]
+    pub fn tokenized(&self) -> crate::tokenized::TokenizedCheckoutClient<'_> {
+        crate::tokenized::TokenizedCheckoutClient::new(self)
+    }
 }
 
 #[cfg(test)]

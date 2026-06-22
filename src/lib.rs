@@ -44,6 +44,9 @@ pub mod error;
 pub mod models;
 pub mod prelude;
 pub mod token;
+#[cfg(feature = "tokenized-checkout")]
+#[cfg_attr(docsrs, doc(cfg(feature = "tokenized-checkout")))]
+pub mod tokenized;
 pub mod transport;
 pub mod webhooks;
 

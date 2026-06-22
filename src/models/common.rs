@@ -1,11 +1,14 @@
 //! Common types shared across model modules.
 
+use std::fmt;
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 
 /// Money amount as a raw string, preserving bKash's loose format
 /// (e.g. `"15"`, `"100.00"`, `"1234.5"`). Use [`Money::as_str`] to access
 /// the raw value.
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(transparent)]
 pub struct Money(String);
 
@@ -56,11 +59,31 @@ impl std::fmt::Display for Money {
 
 /// Currency code. bKash primarily supports BDT.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[non_exhaustive]
 pub enum Currency {
     /// Bangladeshi Taka.
     #[default]
     #[serde(rename = "BDT")]
     Bdt,
+}
+
+impl fmt::Display for Currency {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Bdt => "BDT",
+        })
+    }
+}
+
+impl FromStr for Currency {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "BDT" => Ok(Self::Bdt),
+            _ => Err(()),
+        }
+    }
 }
 
 /// Payment intent.
@@ -74,11 +97,33 @@ pub enum Intent {
     Authorization,
 }
 
+impl fmt::Display for Intent {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Sale => "sale",
+            Self::Authorization => "authorization",
+        })
+    }
+}
+
+impl FromStr for Intent {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "sale" => Ok(Self::Sale),
+            "authorization" => Ok(Self::Authorization),
+            _ => Err(()),
+        }
+    }
+}
+
 /// Transaction status as returned by bKash search-transaction endpoints.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 pub enum TransactionStatus {
     /// Transaction has been initiated but not yet completed.
+    #[default]
     Initiated,
     /// Transaction completed successfully.
     Completed,
@@ -92,15 +137,66 @@ pub enum TransactionStatus {
     Declined,
 }
 
-/// Payer type.
+impl fmt::Display for TransactionStatus {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Initiated => "Initiated",
+            Self::Completed => "Completed",
+            Self::PendingAuthorized => "PendingAuthorized",
+            Self::Expired => "Expired",
+            Self::Cancelled => "Cancelled",
+            Self::Declined => "Declined",
+        })
+    }
+}
+
+impl FromStr for TransactionStatus {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Initiated" => Ok(Self::Initiated),
+            "Completed" => Ok(Self::Completed),
+            "PendingAuthorized" => Ok(Self::PendingAuthorized),
+            "Expired" => Ok(Self::Expired),
+            "Cancelled" => Ok(Self::Cancelled),
+            "Declined" => Ok(Self::Declined),
+            _ => Err(()),
+        }
+    }
+}
+
+/// Payer type. bKash wire format: `"Customer"` | `"Merchant"`.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
 pub enum PayerType {
     /// Customer's bKash account.
     #[default]
+    #[serde(rename = "Customer")]
     Customer,
     /// Merchant's bKash account.
+    #[serde(rename = "Merchant")]
     Merchant,
+}
+
+impl fmt::Display for PayerType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(match self {
+            Self::Customer => "Customer",
+            Self::Merchant => "Merchant",
+        })
+    }
+}
+
+impl FromStr for PayerType {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Customer" => Ok(Self::Customer),
+            "Merchant" => Ok(Self::Merchant),
+            _ => Err(()),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -173,5 +269,54 @@ mod tests {
     fn transaction_status_serialisation() {
         let j = serde_json::to_string(&TransactionStatus::PendingAuthorized).unwrap();
         assert_eq!(j, "\"PendingAuthorized\"");
+    }
+
+    #[test]
+    fn intent_from_str_parses_known() {
+        assert_eq!("sale".parse::<Intent>().unwrap(), Intent::Sale);
+        assert_eq!(
+            "authorization".parse::<Intent>().unwrap(),
+            Intent::Authorization
+        );
+        assert!("unknown".parse::<Intent>().is_err());
+    }
+
+    #[test]
+    fn transaction_status_from_str_parses_all_six() {
+        assert_eq!(
+            "Initiated".parse::<TransactionStatus>().unwrap(),
+            TransactionStatus::Initiated
+        );
+        assert_eq!(
+            "Completed".parse::<TransactionStatus>().unwrap(),
+            TransactionStatus::Completed
+        );
+        assert_eq!(
+            "PendingAuthorized".parse::<TransactionStatus>().unwrap(),
+            TransactionStatus::PendingAuthorized
+        );
+        assert_eq!(
+            "Expired".parse::<TransactionStatus>().unwrap(),
+            TransactionStatus::Expired
+        );
+        assert_eq!(
+            "Cancelled".parse::<TransactionStatus>().unwrap(),
+            TransactionStatus::Cancelled
+        );
+        assert_eq!(
+            "Declined".parse::<TransactionStatus>().unwrap(),
+            TransactionStatus::Declined
+        );
+        assert!("Foo".parse::<TransactionStatus>().is_err());
+    }
+
+    #[test]
+    fn payer_type_display_and_from_str() {
+        assert_eq!(PayerType::Customer.to_string(), "Customer");
+        assert_eq!(PayerType::Merchant.to_string(), "Merchant");
+        assert_eq!(
+            "Customer".parse::<PayerType>().unwrap(),
+            PayerType::Customer
+        );
     }
 }

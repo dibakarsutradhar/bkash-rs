@@ -10,3 +10,6 @@ pub use crate::error::{Error, ErrorCode};
 pub use crate::models::common::{Currency, Intent, Money, PayerType, TransactionStatus};
 pub use crate::token::{CachedToken, TokenCache};
 pub use crate::transport::{RequestOptions, Transport};
+
+#[cfg(feature = "tokenized-checkout")]
+pub use crate::tokenized::TokenizedCheckoutClient;
