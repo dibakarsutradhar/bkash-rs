@@ -11,7 +11,7 @@ env:
 
 jobs:
   check:
-    name: Lint, build, test
+    name: Lint, build, test (offline only)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +36,11 @@ jobs:
       - name: cargo clippy (all targets, all features, deny warnings)
         run: cargo clippy --all-targets --all-features -- -D warnings
 
-      - name: cargo test (all features)
+      # NOTE: `cargo test --all-features` runs the offline wiremock suite
+      # plus the proptest round-trips. Live sandbox smoke tests live in
+      # `tests/live/` and are marked `#[ignore]` so they are NEVER
+      # exercised here. To run them locally, see CONTRIBUTING.md.
+      - name: cargo test (all features, offline only)
         run: cargo test --all-features
 
       - name: cargo doc (no deps, deny warnings)

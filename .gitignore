@@ -31,6 +31,9 @@ Thumbs.db
 /coverage/
 /.tarpaulin.info
 
+# proptest regression artifacts
+/proptest-regressions/
+
 # Environment
 .env
 .env.local
