@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Subscriptions product accessor (`bkash::subscriptions()`) behind the
+  `subscriptions` cargo feature. Exposes
+  `create_subscription` / `execute_subscription` / `query_subscription` /
+  `cancel_subscription` (thin wrapper over the tokenized-checkout
+  agreement endpoints, which is how bKash's subscriptions product is
+  hosted).
 - Initial crate scaffolding (`bkash-rs`).
 - Module skeleton: `client`, `config`, `error`, `token`, `transport`, `webhooks`,
   `models` (with `common`, `token`, `checkout`, `tokenized`, `auth_capture`,

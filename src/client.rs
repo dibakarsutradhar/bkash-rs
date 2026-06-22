@@ -97,6 +97,14 @@ impl Bkash {
     pub fn auth_capture(&self) -> crate::auth_capture::AuthCaptureClient<'_> {
         crate::auth_capture::AuthCaptureClient::new(self)
     }
+
+    /// Access the Subscriptions product accessor.
+    #[cfg(feature = "subscriptions")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "subscriptions")))]
+    #[must_use]
+    pub fn subscriptions(&self) -> crate::subscriptions::SubscriptionsClient<'_> {
+        crate::subscriptions::SubscriptionsClient::new(self)
+    }
 }
 
 #[cfg(test)]

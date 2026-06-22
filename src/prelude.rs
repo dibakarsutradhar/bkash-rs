@@ -19,3 +19,6 @@ pub use crate::checkout::CheckoutClient;
 
 #[cfg(feature = "auth-capture")]
 pub use crate::auth_capture::AuthCaptureClient;
+
+#[cfg(feature = "subscriptions")]
+pub use crate::subscriptions::SubscriptionsClient;

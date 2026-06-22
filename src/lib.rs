@@ -49,6 +49,9 @@ pub mod config;
 pub mod error;
 pub mod models;
 pub mod prelude;
+#[cfg(feature = "subscriptions")]
+#[cfg_attr(docsrs, doc(cfg(feature = "subscriptions")))]
+pub mod subscriptions;
 pub mod token;
 #[cfg(feature = "tokenized-checkout")]
 #[cfg_attr(docsrs, doc(cfg(feature = "tokenized-checkout")))]
