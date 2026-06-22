@@ -1,0 +1,36 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS files
+Thumbs.db
+
+# Local tooling
+.puku-sh/
+.puku-cli/
+.claude/
+.commandcode/
+
+# Working planning/spec docs (kept on disk, not in git history)
+# Per user instruction, all docs/ are kept out of git.
+/docs/
+
+# Logs
+*.log
+
+# Coverage
+/coverage/
+/.tarpaulin.info
+
+# Environment
+.env
+.env.local
