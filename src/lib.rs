@@ -38,6 +38,9 @@
 #![warn(rust_2018_idioms)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+#[cfg(feature = "checkout")]
+#[cfg_attr(docsrs, doc(cfg(feature = "checkout")))]
+pub mod checkout;
 pub mod client;
 pub mod config;
 pub mod error;

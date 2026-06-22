@@ -81,6 +81,14 @@ impl Bkash {
     pub fn tokenized(&self) -> crate::tokenized::TokenizedCheckoutClient<'_> {
         crate::tokenized::TokenizedCheckoutClient::new(self)
     }
+
+    /// Access the URL-based Checkout product accessor.
+    #[cfg(feature = "checkout")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "checkout")))]
+    #[must_use]
+    pub fn checkout(&self) -> crate::checkout::CheckoutClient<'_> {
+        crate::checkout::CheckoutClient::new(self)
+    }
 }
 
 #[cfg(test)]
