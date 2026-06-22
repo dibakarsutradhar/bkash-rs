@@ -57,6 +57,8 @@ pub mod token;
 #[cfg_attr(docsrs, doc(cfg(feature = "tokenized-checkout")))]
 pub mod tokenized;
 pub mod transport;
+#[cfg(feature = "webhooks")]
+#[cfg_attr(docsrs, doc(cfg(feature = "webhooks")))]
 pub mod webhooks;
 
 pub use crate::client::Bkash;

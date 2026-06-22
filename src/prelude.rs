@@ -22,3 +22,9 @@ pub use crate::auth_capture::AuthCaptureClient;
 
 #[cfg(feature = "subscriptions")]
 pub use crate::subscriptions::SubscriptionsClient;
+
+#[cfg(feature = "webhooks")]
+pub use crate::webhooks::{
+    confirm_subscription, parse_event, verify_sns_signature, CouponPaymentEvent, PaymentEvent,
+    SnsEnvelope, TransactionType, WebhookEvent,
+};
