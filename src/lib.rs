@@ -8,22 +8,21 @@
 //!
 //! ## Quickstart
 //!
-//! ```ignore
+//! ```no_run
 //! use bkash_rs::prelude::*;
-//!
 //! # async fn run() -> Result<(), bkash_rs::Error> {
-//! let client = Client::builder()
+//! let bkash = Bkash::builder()
 //!     .environment(Environment::Sandbox)
-//!     .credentials(/* ... */)
-//!     .build()
-//!     .await?;
-//! # let _ = client;
+//!     .app_key("your_app_key")
+//!     .app_secret("your_app_secret")
+//!     .username("your_username")
+//!     .password("your_password")
+//!     .build()?;
+//! let bkash = Bkash::new(bkash).await?;
+//! # let _ = bkash;
 //! # Ok(())
 //! # }
 //! ```
-//!
-//! The real quickstart will be wired up in Phase 3 once `Client::builder`,
-//! `Environment`, and the credential types land.
 //!
 //! ## Features
 //!
@@ -47,3 +46,7 @@ pub mod prelude;
 pub mod token;
 pub mod transport;
 pub mod webhooks;
+
+pub use crate::client::Bkash;
+pub use crate::config::{Config, ConfigBuilder, Environment, Product};
+pub use crate::error::{Error, ErrorCode};

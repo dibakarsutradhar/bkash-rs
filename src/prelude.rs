@@ -4,4 +4,9 @@
 //! use bkash_rs::prelude::*;
 //! ```
 
-pub use crate::client::Client;
+pub use crate::client::Bkash;
+pub use crate::config::{Config, ConfigBuilder, Environment, Product};
+pub use crate::error::{Error, ErrorCode};
+pub use crate::models::common::{Currency, Intent, Money, PayerType, TransactionStatus};
+pub use crate::token::{CachedToken, TokenCache};
+pub use crate::transport::{RequestOptions, Transport};

@@ -32,6 +32,7 @@ subscriptions = []
 webhooks = ["dep:rsa", "dep:sha1", "dep:x509-cert", "dep:base64"]
 
 [dependencies]
+async-trait = "0.1"
 reqwest = { version = "0.13", default-features = false, features = ["json"] }
 tokio = { version = "1", features = ["sync", "time", "rt"] }
 serde = { version = "1", features = ["derive"] }
