@@ -251,3 +251,116 @@ async fn http_401_triggers_force_regrant_and_retry() {
     let n = grants.load(Ordering::SeqCst);
     assert!(n >= 2, "expected ≥ 2 grants, got {n}");
 }
+
+#[tokio::test]
+async fn post_regrant_transient_error_is_retried() {
+    let server = MockServer::start().await;
+
+    // Grant endpoint
+    Mock::given(method("POST"))
+        .and(path("/tokenized/checkout/token/grant"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+            "statusCode": "0000",
+            "statusMessage": "Success",
+            "id_token": "id-abc",
+            "refresh_token": "refresh-xyz",
+            "expires_in": 3600,
+            "token_type": "Bearer"
+        })))
+        .mount(&server)
+        .await;
+
+    // First call: 401 → forces a re-grant
+    Mock::given(method("POST"))
+        .and(path("/tokenized/checkout/payment/create"))
+        .respond_with(ResponseTemplate::new(401).set_body_string("Unauthorized"))
+        .up_to_n_times(1)
+        .mount(&server)
+        .await;
+    // Second call (post-regrant): 503 (transient) → should retry
+    Mock::given(method("POST"))
+        .and(path("/tokenized/checkout/payment/create"))
+        .respond_with(ResponseTemplate::new(503).set_body_string("Service Unavailable"))
+        .up_to_n_times(1)
+        .mount(&server)
+        .await;
+    // Third call: success
+    Mock::given(method("POST"))
+        .and(path("/tokenized/checkout/payment/create"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+            "statusCode": "0000",
+            "statusMessage": "Success",
+            "payment_id": "TRX0003",
+            "amount": "75.00"
+        })))
+        .mount(&server)
+        .await;
+
+    // Configure the transport with at least one transient retry so the
+    // post-regrant 503 is eligible for retry.
+    let cfg = Config::builder()
+        .environment(Environment::Sandbox)
+        .app_key("test-app-key")
+        .app_secret("test-app-secret")
+        .username("test-user")
+        .password("test-pass")
+        .with_base_url(server.uri())
+        .max_retries(2)
+        .build()
+        .unwrap();
+    let transport = Transport::new(cfg).await.unwrap();
+
+    let body = serde_json::json!({});
+    let resp: SampleReply = transport
+        .request(
+            Product::Tokenized,
+            reqwest::Method::POST,
+            "tokenized/checkout/payment/create",
+            Some(&body),
+        )
+        .await
+        .unwrap();
+    assert_eq!(resp.payment_id, "TRX0003");
+}
+
+#[tokio::test]
+async fn double_401_after_regrant_surfaces_as_auth() {
+    let server = MockServer::start().await;
+
+    // Grant endpoint
+    Mock::given(method("POST"))
+        .and(path("/tokenized/checkout/token/grant"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+            "statusCode": "0000",
+            "statusMessage": "Success",
+            "id_token": "id-abc",
+            "refresh_token": "refresh-xyz",
+            "expires_in": 3600,
+            "token_type": "Bearer"
+        })))
+        .mount(&server)
+        .await;
+
+    // Every payment/create call returns 401 — including after re-grant.
+    Mock::given(method("POST"))
+        .and(path("/tokenized/checkout/payment/create"))
+        .respond_with(ResponseTemplate::new(401).set_body_string("Unauthorized"))
+        .mount(&server)
+        .await;
+
+    let transport = transport_for(&server).await;
+    let body = serde_json::json!({});
+    let err = transport
+        .request::<serde_json::Value, SampleReply>(
+            Product::Tokenized,
+            reqwest::Method::POST,
+            "tokenized/checkout/payment/create",
+            Some(&body),
+        )
+        .await
+        .unwrap_err();
+    match &err {
+        Error::Auth(msg) => assert!(msg.contains("401 after force-regrant")),
+        other => panic!("expected Error::Auth, got {other:?}"),
+    }
+}

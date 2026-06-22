@@ -164,6 +164,8 @@ impl Transport {
         };
 
         let mut attempt: u32 = 0;
+        let mut force_regrant_done = false;
+        let mut current_token = token;
         loop {
             attempt += 1;
             match self
@@ -172,26 +174,29 @@ impl Transport {
                     method.clone(),
                     path,
                     body,
-                    &token.id_token,
+                    &current_token.id_token,
                     options,
                 )
                 .await
             {
                 Ok(r) => return Ok(r),
-                Err(Error::Api { status: 401, .. }) if attempt == 1 => {
+                Err(Error::Api { status: 401, .. }) if !force_regrant_done => {
                     warn!(path, "401 from bKash; forcing re-grant and retrying");
                     self.inner.token_cache.clear().await;
-                    let new_token = tm.force_grant(product).await?;
-                    return self
-                        .send_once::<P, R>(
-                            product,
-                            method,
-                            path,
-                            body,
-                            &new_token.id_token,
-                            options,
-                        )
-                        .await;
+                    current_token = tm.force_grant(product).await?;
+                    force_regrant_done = true;
+                    // The post-regrant call still participates in the
+                    // transient retry loop below; do not return here.
+                    continue;
+                }
+                Err(Error::Api {
+                    status: 401,
+                    message,
+                    ..
+                }) if force_regrant_done => {
+                    // We already force-regranted once and still got 401;
+                    // surface as a credential failure rather than retrying.
+                    return Err(Error::Auth(format!("401 after force-regrant: {message}")));
                 }
                 Err(e) if e.is_transient() && attempt < max_attempts => {
                     let backoff = backoff_for(attempt);
