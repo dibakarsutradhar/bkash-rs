@@ -9,6 +9,8 @@
 
 #![cfg(feature = "tokenized-checkout")]
 
+mod common;
+
 use bkash_rs::config::{Config, Environment};
 use bkash_rs::models::common::{Currency, Money};
 use bkash_rs::models::token::{GrantTokenRequest, RefreshTokenRequest};
@@ -18,6 +20,7 @@ use bkash_rs::models::tokenized::{
     RefundStatusRequest, SearchTransactionRequest,
 };
 use bkash_rs::prelude::*;
+use common::Fixture;
 use serde_json::json;
 use wiremock::matchers::{header, method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
@@ -106,37 +109,31 @@ async fn create_agreement_returns_payment_id() {
     let server = MockServer::start().await;
     mount_grant(&server, "id-abc").await;
 
+    // Sanitized fixture loaded from tests/common/fixtures/.
+    let body = Fixture::load("tokenized_create_agreement.json");
+
     Mock::given(method("POST"))
         .and(path("/tokenized/checkout/create"))
         .and(header("Authorization", "Bearer id-abc"))
         .and(header("X-APP-Key", "test-app-key"))
-        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
-            "statusCode": "0000",
-            "statusMessage": "Success",
-            "paymentID": "TR0001",
-            "bkashURL": "https://example.test/bkash",
-            "callbackURL": "https://merchant.test/cb",
-            "agreementCreateTime": "2026-06-22T10:00:00:000 GMT+06:00",
-            "payerReference": "cust-1",
-            "orgShortCode": "0123",
-            "currency": "BDT",
-            "intent": "sale",
-            "merchantInvoiceNumber": ""
-        })))
+        .respond_with(ResponseTemplate::new(200).set_body_json(body))
         .expect(1)
         .mount(&server)
         .await;
 
     let bkash = bkash_for(&server).await;
     let req = CreateAgreementRequest::new(
-        "cust-1",
-        "https://merchant.test/cb",
+        "TEST-CUST-001",
+        "https://example.com/callback",
         Money::bdt("100.00"),
         Currency::Bdt,
     );
     let resp = bkash.tokenized().create_agreement(req).await.unwrap();
-    assert_eq!(resp.payment_id, "TR0001");
-    assert_eq!(resp.bkash_url, "https://example.test/bkash");
+    assert_eq!(resp.payment_id, "TEST00000001");
+    assert_eq!(
+        resp.bkash_url,
+        "https://tokenized.sandbox.bka.sh/redirect/?token=SANITIZED_TOKEN"
+    );
 }
 
 #[tokio::test]
@@ -257,40 +254,30 @@ async fn create_payment_uses_mode_0001() {
     let server = MockServer::start().await;
     mount_grant(&server, "id-abc").await;
 
+    // Sanitized fixture loaded from tests/common/fixtures/.
+    let body = Fixture::load("tokenized_create_payment.json");
+
     Mock::given(method("POST"))
         .and(path("/tokenized/checkout/create"))
         .and(header("Authorization", "Bearer id-abc"))
-        .respond_with(ResponseTemplate::new(200).set_body_json(json!({
-            "statusCode": "0000",
-            "statusMessage": "Success",
-            "paymentID": "TR0100",
-            "bkashURL": "https://example.test/bkash",
-            "callbackURL": "https://merchant.test/cb",
-            "paymentCreateTime": "2026-06-22T10:00:00:000 GMT+06:00",
-            "agreementID": "AG0001",
-            "payerReference": "cust-1",
-            "orgShortCode": "0123",
-            "currency": "BDT",
-            "intent": "sale",
-            "merchantInvoiceNumber": ""
-        })))
+        .respond_with(ResponseTemplate::new(200).set_body_json(body))
         .expect(1)
         .mount(&server)
         .await;
 
     let bkash = bkash_for(&server).await;
     let req = CreatePaymentRequest::new(
-        "AG0001",
-        "cust-1",
-        "https://merchant.test/cb",
-        Money::bdt("50.00"),
+        "TEST-AG-0001",
+        "TEST-CUST-001",
+        "https://example.com/callback",
+        Money::bdt("100.00"),
         Currency::Bdt,
     )
-    .with_merchant_invoice_number("INV-PAY-1")
+    .with_merchant_invoice_number("INV-TEST-002")
     .with_merchant_association_info("tag1v1");
     let resp = bkash.tokenized().create_payment(req).await.unwrap();
-    assert_eq!(resp.payment_id, "TR0100");
-    assert_eq!(resp.agreement_id, "AG0001");
+    assert_eq!(resp.payment_id, "TEST-PAY-0001");
+    assert_eq!(resp.agreement_id, "TEST-AG-0001");
 }
 
 #[tokio::test]

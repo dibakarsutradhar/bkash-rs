@@ -1,0 +1,18 @@
+{
+  "statusCode": "0000",
+  "statusMessage": "Successful",
+  "trxID": "TESTCOTRX0001",
+  "transactionStatus": "Completed",
+  "transactionType": "Payment",
+  "amount": "50.00",
+  "currency": "BDT",
+  "customerMsisdn": "01700000000",
+  "organizationShortCode": "0001",
+  "initiationTime": "2026-06-22T12:00:00:000 GMT+0000",
+  "completedTime": "2026-06-22T12:01:00:000 GMT+0000",
+  "payerType": "Customer",
+  "maxRefundableAmount": "50.00",
+  "saleAmount": "50.00",
+  "serviceFee": "0.00",
+  "payerAccount": "TEST0000003"
+}

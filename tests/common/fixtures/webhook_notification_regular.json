@@ -1,0 +1,13 @@
+{
+  "Type": "Notification",
+  "MessageId": "msg-1",
+  "Token": "",
+  "TopicArn": "arn:aws:sns:ap-southeast-1:000000000000:bpt_xxx",
+  "Message": "{\"dateTime\":\"20180419122247\",\"debitMSISDN\":\"8801700000001\",\"creditOrganizationName\":\"Org 01\",\"creditShortCode\":\"0001***\",\"trxID\":\"TESTWHTRX0001\",\"transactionStatus\":\"Completed\",\"transactionType\":\"10002294\",\"amount\":\"100\",\"currency\":\"BDT\",\"transactionReference\":\"Test_Payment\",\"merchantInvoiceNumber\":\"INV-WH-001\"}",
+  "SubscribeURL": "",
+  "Timestamp": "2026-06-22T12:00:00.000Z",
+  "SignatureVersion": "1",
+  "Signature": "SANITIZED-SIGNATURE",
+  "SigningCertURL": "https://sns.ap-southeast-1.amazonaws.com/SimpleNotificationService-xyz.pem",
+  "UnsubscribeURL": "https://sns.ap-southeast-1.amazonaws.com/?Action=Unsubscribe&..."
+}

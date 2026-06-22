@@ -1,0 +1,13 @@
+{
+  "statusCode": "0000",
+  "statusMessage": "Successful",
+  "paymentID": "TEST-AC-0001",
+  "bkashURL": "https://tokenized.sandbox.bka.sh/redirect/?token=SANITIZED_TOKEN",
+  "callbackURL": "https://example.com/callback",
+  "paymentCreateTime": "2026-06-22T12:00:00:000 GMT+0000",
+  "payerReference": "TEST-CUST-003",
+  "orgShortCode": "0001",
+  "currency": "BDT",
+  "intent": "authorization",
+  "merchantInvoiceNumber": "INV-AC-001"
+}

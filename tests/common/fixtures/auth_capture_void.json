@@ -1,0 +1,9 @@
+{
+  "statusCode": "0000",
+  "statusMessage": "Successful",
+  "paymentId": "TEST-AC-0001",
+  "createTime": "2026-06-22T12:02:00:000 GMT+0000",
+  "updateTime": "2026-06-22T12:02:00:000 GMT+0000",
+  "trxID": "TESTACTRX0001",
+  "transactionStatus": "Cancelled"
+}

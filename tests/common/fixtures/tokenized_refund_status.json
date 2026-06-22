@@ -1,0 +1,14 @@
+{
+  "statusCode": "0000",
+  "statusMessage": "Successful",
+  "paymentID": "TEST-PAY-0001",
+  "trxID": "TESTTRX000001",
+  "refundTrxID": "TESTREFUND0001",
+  "refundAmount": "25.00",
+  "sku": "TEST-SKU-001",
+  "reason": "customer-return",
+  "maxRefundableAmount": "75.00",
+  "transactionStatus": "Completed",
+  "initiationTime": "2026-06-22T12:02:00:000 GMT+0000",
+  "completedTime": "2026-06-22T12:02:30:000 GMT+0000"
+}

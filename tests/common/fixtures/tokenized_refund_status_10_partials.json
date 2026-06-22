@@ -1,0 +1,91 @@
+{
+  "statusCode": "0000",
+  "statusMessage": "Successful",
+  "paymentID": "TEST-PAY-0001",
+  "trxID": "TESTTRX000001",
+  "amount": "100.00",
+  "currency": "BDT",
+  "transactionStatus": "Completed",
+  "refundTransactions": [
+    {
+      "refundTrxID": "TESTREFUND0001",
+      "refundAmount": "5.00",
+      "refundTime": "2026-06-22T12:01:00:000 GMT+0000",
+      "transactionStatus": "Completed",
+      "sku": "TEST-SKU-001",
+      "reason": "partial-1"
+    },
+    {
+      "refundTrxID": "TESTREFUND0002",
+      "refundAmount": "7.50",
+      "refundTime": "2026-06-22T12:02:00:000 GMT+0000",
+      "transactionStatus": "Completed",
+      "sku": "TEST-SKU-002",
+      "reason": "partial-2"
+    },
+    {
+      "refundTrxID": "TESTREFUND0003",
+      "refundAmount": "10.00",
+      "refundTime": "2026-06-22T12:03:00:000 GMT+0000",
+      "transactionStatus": "Completed",
+      "sku": "TEST-SKU-003",
+      "reason": "partial-3"
+    },
+    {
+      "refundTrxID": "TESTREFUND0004",
+      "refundAmount": "8.25",
+      "refundTime": "2026-06-22T12:04:00:000 GMT+0000",
+      "transactionStatus": "Completed",
+      "sku": "TEST-SKU-004",
+      "reason": "partial-4"
+    },
+    {
+      "refundTrxID": "TESTREFUND0005",
+      "refundAmount": "12.50",
+      "refundTime": "2026-06-22T12:05:00:000 GMT+0000",
+      "transactionStatus": "Completed",
+      "sku": "TEST-SKU-005",
+      "reason": "partial-5"
+    },
+    {
+      "refundTrxID": "TESTREFUND0006",
+      "refundAmount": "9.99",
+      "refundTime": "2026-06-22T12:06:00:000 GMT+0000",
+      "transactionStatus": "Completed",
+      "sku": "TEST-SKU-006",
+      "reason": "partial-6"
+    },
+    {
+      "refundTrxID": "TESTREFUND0007",
+      "refundAmount": "11.00",
+      "refundTime": "2026-06-22T12:07:00:000 GMT+0000",
+      "transactionStatus": "Completed",
+      "sku": "TEST-SKU-007",
+      "reason": "partial-7"
+    },
+    {
+      "refundTrxID": "TESTREFUND0008",
+      "refundAmount": "6.75",
+      "refundTime": "2026-06-22T12:08:00:000 GMT+0000",
+      "transactionStatus": "Completed",
+      "sku": "TEST-SKU-008",
+      "reason": "partial-8"
+    },
+    {
+      "refundTrxID": "TESTREFUND0009",
+      "refundAmount": "14.00",
+      "refundTime": "2026-06-22T12:09:00:000 GMT+0000",
+      "transactionStatus": "Completed",
+      "sku": "TEST-SKU-009",
+      "reason": "partial-9"
+    },
+    {
+      "refundTrxID": "TESTREFUND0010",
+      "refundAmount": "15.01",
+      "refundTime": "2026-06-22T12:10:00:000 GMT+0000",
+      "transactionStatus": "Completed",
+      "sku": "TEST-SKU-010",
+      "reason": "partial-10"
+    }
+  ]
+}

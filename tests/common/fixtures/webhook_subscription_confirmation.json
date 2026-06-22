@@ -1,0 +1,13 @@
+{
+  "Type": "SubscriptionConfirmation",
+  "MessageId": "msg-3",
+  "Token": "SANITIZED_TOKEN",
+  "TopicArn": "arn:aws:sns:ap-southeast-1:000000000000:bpt_xxx",
+  "Message": "You have chosen to subscribe to the topic ...",
+  "SubscribeURL": "https://sns.ap-southeast-1.amazonaws.com/?Action=ConfirmSubscription&Token=SANITIZED_TOKEN",
+  "Timestamp": "2026-06-22T12:00:00.000Z",
+  "SignatureVersion": "1",
+  "Signature": "SANITIZED-SIGNATURE",
+  "SigningCertURL": "https://sns.ap-southeast-1.amazonaws.com/SimpleNotificationService-xyz.pem",
+  "UnsubscribeURL": ""
+}
