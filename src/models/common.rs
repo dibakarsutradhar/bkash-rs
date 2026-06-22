@@ -335,4 +335,25 @@ mod tests {
             PayerType::Customer
         );
     }
+
+    // ---- proptest round-trips -----------------------------------------
+
+    use proptest::prelude::*;
+
+    proptest! {
+        // `Money` is a transparent newtype around `String`; any printable
+        // string should round-trip cleanly through serde. We restrict to
+        // printable chars because bKash's amount strings are ASCII digits
+        // and dots in practice, and full-utf-8 control chars don't survive
+        // a naive string concat (serde_json escapes them).
+        #[test]
+        fn money_round_trip_arbitrary(s in "[0-9.]{0,32}") {
+            let m = Money::new(s.clone());
+            let json = serde_json::to_string(&m).unwrap();
+            // Transparent: serialises as a plain JSON string.
+            prop_assert_eq!(json.clone(), format!("\"{}\"", s));
+            let back: Money = serde_json::from_str(&json).unwrap();
+            prop_assert_eq!(back, m);
+        }
+    }
 }

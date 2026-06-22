@@ -381,4 +381,30 @@ mod tests {
         assert_eq!(resp.agreement_id, "AG0001");
         assert_eq!(resp.agreement_status, "Cancelled");
     }
+
+    // ---- proptest round-trips -----------------------------------------
+
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn create_agreement_request_roundtrip(
+            payer_ref in ".*",
+            callback in ".*",
+            amount in ".*",
+            inv in proptest::option::of(".*"),
+        ) {
+            let mut req = CreateAgreementRequest::new(
+                payer_ref,
+                callback,
+                Money::new(amount),
+                Currency::Bdt,
+            );
+            req.merchant_invoice_number = inv;
+            let json = serde_json::to_string(&req).unwrap();
+            let back: CreateAgreementRequest = serde_json::from_str(&json).unwrap();
+            let json2 = serde_json::to_string(&back).unwrap();
+            prop_assert_eq!(json, json2);
+        }
+    }
 }

@@ -380,4 +380,28 @@ mod tests {
         assert_eq!(resp.amount.as_str(), "50.00");
         assert_eq!(resp.callback_url, "https://example.test/cb");
     }
+
+    // ---- proptest round-trips -----------------------------------------
+
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn create_payment_request_roundtrip(
+            payer_ref in ".*",
+            callback in ".*",
+            amount in ".*",
+        ) {
+            let req = CreatePaymentRequest::new(
+                payer_ref,
+                callback,
+                Money::new(amount),
+                Currency::Bdt,
+            );
+            let json = serde_json::to_string(&req).unwrap();
+            let back: CreatePaymentRequest = serde_json::from_str(&json).unwrap();
+            let json2 = serde_json::to_string(&back).unwrap();
+            prop_assert_eq!(json, json2);
+        }
+    }
 }

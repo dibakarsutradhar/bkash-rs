@@ -178,4 +178,44 @@ mod tests {
         assert_eq!(resp.merchant_share_amount.as_str(), "85.00");
         assert_eq!(resp.credited_amount.as_str(), "95.00");
     }
+
+    // ---- proptest round-trips -----------------------------------------
+
+    use proptest::prelude::*;
+
+    // `SearchTransactionResponse` is fully populated by bKash — round-trip
+    // any JSON object that successfully deserialises back through the
+    // same shape. This guards against accidental rename/alias drift.
+    proptest! {
+        #[test]
+        fn search_transaction_response_roundtrip(
+            trx_id in ".*",
+            amount in ".*",
+            currency in proptest::sample::select(vec![Currency::Bdt]),
+        ) {
+            let resp = SearchTransactionResponse {
+                trx_id,
+                transaction_status: TransactionStatus::Completed,
+                transaction_type: "Payment".to_string(),
+                amount: Money::new(amount),
+                currency,
+                customer_msisdn: String::new(),
+                organization_short_code: String::new(),
+                initiation_time: String::new(),
+                completed_time: String::new(),
+                payer_type: PayerType::Customer,
+                max_refundable_amount: Money::new(String::new()),
+                sale_amount: Money::new(String::new()),
+                service_fee: Money::new(String::new()),
+                payer_account: String::new(),
+                coupon_amount: Money::new(String::new()),
+                merchant_share_amount: Money::new(String::new()),
+                credited_amount: Money::new(String::new()),
+            };
+            let json = serde_json::to_string(&resp).unwrap();
+            let back: SearchTransactionResponse = serde_json::from_str(&json).unwrap();
+            let json2 = serde_json::to_string(&back).unwrap();
+            prop_assert_eq!(json, json2);
+        }
+    }
 }

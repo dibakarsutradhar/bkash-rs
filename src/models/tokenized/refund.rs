@@ -223,4 +223,31 @@ mod tests {
         assert_eq!(json["paymentID"], "TR0001");
         assert_eq!(json["trxID"], "8A00ABCD");
     }
+
+    // ---- proptest round-trips -----------------------------------------
+
+    use proptest::prelude::*;
+
+    proptest! {
+        #[test]
+        fn refund_request_roundtrip(
+            payment_id in ".*",
+            trx_id in ".*",
+            amount in ".*",
+            sku in ".*",
+            reason in ".*",
+        ) {
+            let req = RefundRequest::new(
+                payment_id,
+                trx_id,
+                Money::new(amount),
+                sku,
+                reason,
+            );
+            let json = serde_json::to_string(&req).unwrap();
+            let back: RefundRequest = serde_json::from_str(&json).unwrap();
+            let json2 = serde_json::to_string(&back).unwrap();
+            prop_assert_eq!(json, json2);
+        }
+    }
 }

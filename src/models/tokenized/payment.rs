@@ -366,4 +366,65 @@ mod tests {
         assert_eq!(resp.transaction_status, "Completed");
         assert_eq!(resp.amount.as_str(), "50.00");
     }
+
+    // ---- proptest round-trips -----------------------------------------
+
+    use proptest::prelude::*;
+
+    // `CreatePaymentRequest` is a struct of plain `String` fields plus a
+    // `Money` (which is itself a string newtype). Generating arbitrary
+    // `String` values and comparing via serialised JSON is the simplest
+    // way to assert that all `serde` attributes are mutually consistent.
+    proptest! {
+        #[test]
+        fn create_payment_request_roundtrip(
+            agreement_id in ".*",
+            payer_ref in ".*",
+            callback in ".*",
+            amount in ".*",
+            intent in proptest::sample::select(vec![Intent::Sale, Intent::Authorization]),
+        ) {
+            let req = CreatePaymentRequest {
+                mode: PAYMENT_MODE.to_string(),
+                agreement_id,
+                payer_reference: payer_ref,
+                callback_url: callback,
+                amount: Money::new(amount),
+                currency: Currency::Bdt,
+                intent,
+                merchant_invoice_number: None,
+                merchant_association_info: None,
+            };
+            let json = serde_json::to_string(&req).unwrap();
+            let back: CreatePaymentRequest = serde_json::from_str(&json).unwrap();
+            let json2 = serde_json::to_string(&back).unwrap();
+            prop_assert_eq!(json, json2);
+        }
+
+        #[test]
+        fn create_payment_request_roundtrip_with_optional_fields(
+            inv in ".*",
+            tlv in ".*",
+        ) {
+            let req = CreatePaymentRequest::new(
+                "AG-1",
+                "cust-1",
+                "https://example.test/cb",
+                Money::bdt("1.00"),
+                Currency::Bdt,
+            )
+            .with_merchant_invoice_number(inv)
+            .with_merchant_association_info(tlv);
+            let json = serde_json::to_string(&req).unwrap();
+            let back: CreatePaymentRequest = serde_json::from_str(&json).unwrap();
+            prop_assert_eq!(
+                back.merchant_invoice_number,
+                req.merchant_invoice_number
+            );
+            prop_assert_eq!(
+                back.merchant_association_info,
+                req.merchant_association_info
+            );
+        }
+    }
 }
