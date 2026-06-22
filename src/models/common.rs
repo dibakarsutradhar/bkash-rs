@@ -129,6 +129,14 @@ pub enum TransactionStatus {
     Completed,
     /// Transaction is in pending-authorized state.
     PendingAuthorized,
+    /// Transaction has been authorized (Auth & Capture flow).
+    ///
+    /// This is the auth-capture-specific name for the state where the
+    /// customer has approved the wallet charge and the funds are reserved
+    /// but not yet captured. Some bKash documents refer to the same state
+    /// as [`TransactionStatus::PendingAuthorized`]; both are modeled
+    /// explicitly per the plan (§1.8 / §1.9).
+    Authorized,
     /// Transaction has expired.
     Expired,
     /// Transaction was cancelled.
@@ -143,6 +151,7 @@ impl fmt::Display for TransactionStatus {
             Self::Initiated => "Initiated",
             Self::Completed => "Completed",
             Self::PendingAuthorized => "PendingAuthorized",
+            Self::Authorized => "Authorized",
             Self::Expired => "Expired",
             Self::Cancelled => "Cancelled",
             Self::Declined => "Declined",
@@ -158,6 +167,7 @@ impl FromStr for TransactionStatus {
             "Initiated" => Ok(Self::Initiated),
             "Completed" => Ok(Self::Completed),
             "PendingAuthorized" => Ok(Self::PendingAuthorized),
+            "Authorized" => Ok(Self::Authorized),
             "Expired" => Ok(Self::Expired),
             "Cancelled" => Ok(Self::Cancelled),
             "Declined" => Ok(Self::Declined),
@@ -269,6 +279,8 @@ mod tests {
     fn transaction_status_serialisation() {
         let j = serde_json::to_string(&TransactionStatus::PendingAuthorized).unwrap();
         assert_eq!(j, "\"PendingAuthorized\"");
+        let j = serde_json::to_string(&TransactionStatus::Authorized).unwrap();
+        assert_eq!(j, "\"Authorized\"");
     }
 
     #[test]
@@ -294,6 +306,10 @@ mod tests {
         assert_eq!(
             "PendingAuthorized".parse::<TransactionStatus>().unwrap(),
             TransactionStatus::PendingAuthorized
+        );
+        assert_eq!(
+            "Authorized".parse::<TransactionStatus>().unwrap(),
+            TransactionStatus::Authorized
         );
         assert_eq!(
             "Expired".parse::<TransactionStatus>().unwrap(),

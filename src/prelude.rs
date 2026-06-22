@@ -16,3 +16,6 @@ pub use crate::tokenized::TokenizedCheckoutClient;
 
 #[cfg(feature = "checkout")]
 pub use crate::checkout::CheckoutClient;
+
+#[cfg(feature = "auth-capture")]
+pub use crate::auth_capture::AuthCaptureClient;

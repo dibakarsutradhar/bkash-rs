@@ -141,12 +141,50 @@ impl Transport {
             .await
     }
 
+    /// Send an authenticated request with a dynamically-formatted path.
+    ///
+    /// Identical to [`request`](Self::request) except the path is taken as
+    /// an owned `String` so callers can interpolate path parameters
+    /// (e.g. `format!("/tokenized/checkout/execute/{paymentID}")`).
+    pub async fn request_path<P, R>(
+        &self,
+        product: Product,
+        method: reqwest::Method,
+        path: String,
+        body: Option<&P>,
+    ) -> Result<R, Error>
+    where
+        P: Serialize + Send + Sync,
+        R: DeserializeOwned,
+    {
+        self.request_with_path(product, method, path, body, &RequestOptions::default())
+            .await
+    }
+
     /// Send an authenticated request with extra per-request options.
     pub async fn request_with<P, R>(
         &self,
         product: Product,
         method: reqwest::Method,
         path: &str,
+        body: Option<&P>,
+        options: &RequestOptions,
+    ) -> Result<R, Error>
+    where
+        P: Serialize + Send + Sync,
+        R: DeserializeOwned,
+    {
+        self.request_with_path(product, method, path.to_string(), body, options)
+            .await
+    }
+
+    /// Send an authenticated request with extra per-request options and a
+    /// dynamically-formatted path.
+    pub async fn request_with_path<P, R>(
+        &self,
+        product: Product,
+        method: reqwest::Method,
+        path: String,
         body: Option<&P>,
         options: &RequestOptions,
     ) -> Result<R, Error>
@@ -172,7 +210,7 @@ impl Transport {
                 .send_once::<P, R>(
                     product,
                     method.clone(),
-                    path,
+                    &path,
                     body,
                     &current_token.id_token,
                     options,
@@ -181,7 +219,7 @@ impl Transport {
             {
                 Ok(r) => return Ok(r),
                 Err(Error::Api { status: 401, .. }) if !force_regrant_done => {
-                    warn!(path, "401 from bKash; forcing re-grant and retrying");
+                    warn!(%path, "401 from bKash; forcing re-grant and retrying");
                     self.inner.token_cache.clear().await;
                     current_token = tm.force_grant(product).await?;
                     force_regrant_done = true;

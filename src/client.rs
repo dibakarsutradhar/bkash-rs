@@ -89,6 +89,14 @@ impl Bkash {
     pub fn checkout(&self) -> crate::checkout::CheckoutClient<'_> {
         crate::checkout::CheckoutClient::new(self)
     }
+
+    /// Access the Auth & Capture product accessor.
+    #[cfg(feature = "auth-capture")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "auth-capture")))]
+    #[must_use]
+    pub fn auth_capture(&self) -> crate::auth_capture::AuthCaptureClient<'_> {
+        crate::auth_capture::AuthCaptureClient::new(self)
+    }
 }
 
 #[cfg(test)]
