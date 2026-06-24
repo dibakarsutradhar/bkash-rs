@@ -10,10 +10,11 @@ repository = "https://github.com/dibakarsutradhar/bkash-rs"
 homepage = "https://github.com/dibakarsutradhar/bkash-rs"
 documentation = "https://docs.rs/bkash-rs"
 readme = "README.md"
-keywords = ["bkash", "payment", "gateway", "bangladesh", "bdt"]
-categories = ["api-bindings", "asynchronous", "web-programming"]
+keywords = ["bkash", "payments", "gateway", "bangladesh", "bdt"]
+categories = ["api-bindings", "asynchronous", "payments", "web-programming"]
 include = [
     "src/**/*.rs",
+    "examples/**/*.rs",
     "Cargo.toml",
     "README.md",
     "CHANGELOG.md",
@@ -41,7 +42,7 @@ thiserror = "2"
 url = "2"
 tracing = "0.1"
 
-# Webhook dependencies (weak; only used with `webhooks` feature, added in Phase 7)
+# Webhook dependencies — only pulled in by the `webhooks` feature.
 rsa = { version = "0.9", optional = true, features = ["sha1"] }
 sha1 = { version = "0.10", optional = true }
 x509-cert = { version = "0.2", optional = true }

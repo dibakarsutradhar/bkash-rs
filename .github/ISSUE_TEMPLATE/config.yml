@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://docs.rs/bkash-rs
+    about: API reference, examples, and module-level docs.
+  - name: Discussions
+    url: https://github.com/dibakarsutradhar/bkash-rs/discussions
+    about: For questions, design discussions, and community help.
+  - name: Security advisories
+    url: https://github.com/dibakarsutradhar/bkash-rs/security/advisories/new
+    about: For private vulnerability reports — do NOT file a public issue.

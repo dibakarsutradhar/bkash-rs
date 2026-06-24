@@ -302,6 +302,30 @@ impl ConfigBuilder {
         cfg.validate()?;
         Ok(cfg)
     }
+
+    /// Validate, build the [`Config`], and immediately open a [`crate::Bkash`]
+    /// client. This is the most common path:
+    ///
+    /// ```no_run
+    /// # use bkash_rs::prelude::*;
+    /// # async fn run() -> Result<(), bkash_rs::Error> {
+    /// let bkash = Bkash::builder()
+    ///     .environment(Environment::Sandbox)
+    ///     .app_key("k").app_secret("s")
+    ///     .username("u").password("p")
+    ///     .build_and_connect()
+    ///     .await?;
+    /// # let _ = bkash;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// Equivalent to `build()?.pipe(Bkash::new)`. Use [`build`](Self::build)
+    /// if you want to inspect the `Config` before opening the client.
+    pub async fn build_and_connect(self) -> Result<crate::Bkash, crate::Error> {
+        let config = self.build()?;
+        crate::Bkash::new(config).await
+    }
 }
 
 #[cfg(test)]
