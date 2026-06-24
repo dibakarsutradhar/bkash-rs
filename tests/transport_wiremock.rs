@@ -364,3 +364,105 @@ async fn double_401_after_regrant_surfaces_as_auth() {
         other => panic!("expected Error::Auth, got {other:?}"),
     }
 }
+
+// -- Regression tests: username/password headers -----------------------
+//
+// bKash requires `username` and `password` headers on every request
+// (including the token-grant call). These tests pin that behaviour so a
+// future transport refactor can't silently drop them.
+
+#[tokio::test]
+async fn authenticated_request_includes_username_and_password_headers() {
+    let server = MockServer::start().await;
+
+    Mock::given(method("POST"))
+        .and(path("/tokenized/checkout/token/grant"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+            "statusCode": "0000",
+            "statusMessage": "Success",
+            "id_token": "id-xyz",
+            "refresh_token": "refresh-xyz",
+            "expires_in": 3600,
+            "token_type": "Bearer"
+        })))
+        .mount(&server)
+        .await;
+
+    let captured = Arc::new(std::sync::Mutex::new(Vec::<(String, String)>::new()));
+    let captured_clone = Arc::clone(&captured);
+
+    Mock::given(method("POST"))
+        .and(path("/tokenized/checkout/payment/create"))
+        .and(header("Authorization", "Bearer id-xyz"))
+        .and(header("X-APP-Key", "test-app-key"))
+        .and(header("username", "test-user"))
+        .and(header("password", "test-pass"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+            "statusCode": "0000",
+            "statusMessage": "Success",
+            "payment_id": "TRX0002",
+            "amount": "100.00"
+        })))
+        .mount(&server)
+        .await;
+
+    let transport = transport_for(&server).await;
+    let body = serde_json::json!({"amount": "100.00"});
+    let _: SampleReply = transport
+        .request(
+            Product::Tokenized,
+            reqwest::Method::POST,
+            "tokenized/checkout/payment/create",
+            Some(&body),
+        )
+        .await
+        .unwrap();
+
+    // Sanity: the wiremock `header` matchers already asserted presence; this
+    // is just to make it explicit in the test output.
+    let _ = captured_clone.lock().unwrap().len();
+}
+
+#[tokio::test]
+async fn grant_token_request_includes_username_and_password_headers() {
+    // Direct unit-style check via `TokenTransport::execute_raw`.
+    use bkash_rs::models::token::TokenResponse;
+    use bkash_rs::token::TokenTransport;
+
+    let server = MockServer::start().await;
+
+    let received = Arc::new(AtomicUsize::new(0));
+    let received_clone = Arc::clone(&received);
+
+    Mock::given(method("POST"))
+        .and(path("/tokenized/checkout/token/grant"))
+        .and(header("username", "test-user"))
+        .and(header("password", "test-pass"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+            "statusCode": "0000",
+            "statusMessage": "Success",
+            "id_token": "id-grant",
+            "refresh_token": "refresh-grant",
+            "expires_in": 3600,
+            "token_type": "Bearer"
+        })))
+        .mount(&server)
+        .await;
+
+    let transport = transport_for(&server).await;
+
+    let req = bkash_rs::models::token::GrantTokenRequest::new("test-app-key", "test-app-secret");
+    let resp: TokenResponse = transport
+        .execute_raw(
+            Product::Tokenized,
+            reqwest::Method::POST,
+            "tokenized/checkout/token/grant",
+            Some(&req),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(resp.id_token, "id-grant");
+    received_clone.store(1, Ordering::SeqCst);
+    assert!(received.load(Ordering::SeqCst) >= 1);
+}

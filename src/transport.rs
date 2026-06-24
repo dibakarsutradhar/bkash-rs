@@ -25,6 +25,14 @@ use crate::token::{TokenCache, TokenManager, TokenTransport};
 
 /// Header name used by bKash to carry the app key.
 pub const X_APP_KEY: HeaderName = HeaderName::from_static("x-app-key");
+/// Header name used by bKash to carry the merchant username.
+///
+/// bKash requires this header on **every** request, including the
+/// token-grant call. (The official docs describe it inconsistently as a
+/// body field; the live server accepts only the header form.)
+pub const USERNAME: HeaderName = HeaderName::from_static("username");
+/// Header name used by bKash to carry the merchant password.
+pub const PASSWORD: HeaderName = HeaderName::from_static("password");
 /// Header name used by bKash to carry the bearer token.
 const BEARER_PREFIX: &str = "Bearer ";
 
@@ -278,6 +286,19 @@ impl Transport {
             HeaderValue::from_str(&self.inner.config.app_key)
                 .map_err(|_| Error::Config("invalid app_key characters".into()))?,
         );
+        // bKash requires `username` and `password` headers on every request,
+        // including the token-grant call. The official docs sometimes show
+        // them as body fields; the live server accepts only the header form.
+        headers.insert(
+            USERNAME,
+            HeaderValue::from_str(&self.inner.config.username)
+                .map_err(|_| Error::Config("invalid username characters".into()))?,
+        );
+        headers.insert(
+            PASSWORD,
+            HeaderValue::from_str(&self.inner.config.password)
+                .map_err(|_| Error::Config("invalid password characters".into()))?,
+        );
         headers.insert(
             reqwest::header::CONTENT_TYPE,
             HeaderValue::from_static("application/json"),
@@ -363,8 +384,21 @@ impl TokenTransport for Transport {
             reqwest::header::ACCEPT,
             HeaderValue::from_static("application/json"),
         );
-        // Token grant needs the app credentials in the body, not the
-        // `Authorization` header. We do not attach `X-APP-Key` here.
+        // bKash requires `username` and `password` headers on the token-grant
+        // call as well. The app credentials still go in the body (as a
+        // `grant_type` + `app_key` + `app_secret` form), but these two
+        // headers must be present or the server rejects the call with
+        // HTTP 400 "Missing required request parameters: [password, username]".
+        headers.insert(
+            USERNAME,
+            HeaderValue::from_str(&self.inner.config.username)
+                .map_err(|_| Error::Config("invalid username characters".into()))?,
+        );
+        headers.insert(
+            PASSWORD,
+            HeaderValue::from_str(&self.inner.config.password)
+                .map_err(|_| Error::Config("invalid password characters".into()))?,
+        );
 
         let mut req = self.inner.http.request(method, &url).headers(headers);
         if let Some(b) = body {

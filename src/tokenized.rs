@@ -333,7 +333,7 @@ impl<'a> TokenizedCheckoutClient<'a> {
             .request(
                 Product::Tokenized,
                 Method::POST,
-                "v2/tokenized-checkout/refund/payment/transaction",
+                "tokenized/checkout/payment/refund",
                 Some(&req),
             )
             .await
