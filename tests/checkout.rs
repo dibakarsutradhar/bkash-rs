@@ -326,7 +326,7 @@ async fn refund_returns_refund_trx_id() {
     mount_grant(&server, "id-abc").await;
 
     Mock::given(method("POST"))
-        .and(path("/v2/tokenized-checkout/refund/payment/transaction"))
+        .and(path("/tokenized/checkout/payment/refund"))
         .and(header("Authorization", "Bearer id-abc"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "statusCode": "0000",
@@ -367,7 +367,7 @@ async fn refund_status_returns_current_state() {
     mount_grant(&server, "id-abc").await;
 
     Mock::given(method("POST"))
-        .and(path("/v2/tokenized-checkout/refund/payment/status"))
+        .and(path("/tokenized/checkout/payment/refund/status"))
         .and(header("Authorization", "Bearer id-abc"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "statusCode": "0000",
@@ -438,7 +438,7 @@ async fn refund_invalid_amount_maps_to_api_error() {
     mount_grant(&server, "id-abc").await;
 
     Mock::given(method("POST"))
-        .and(path("/v2/tokenized-checkout/refund/payment/transaction"))
+        .and(path("/tokenized/checkout/payment/refund"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "errorCode": "2071",
             "errorMessage": "Refund: invalid amount"

@@ -11,8 +11,8 @@
 //! | Execute Payment  | POST   | `/tokenized/checkout/execute`                           |
 //! | Query Payment    | POST   | `/tokenized/checkout/payment/status`                    |
 //! | Search Tx        | POST   | `/tokenized/checkout/general/searchTransaction`         |
-//! | Refund           | POST   | `/v2/tokenized-checkout/refund/payment/transaction`     |
-//! | Refund Status    | POST   | `/v2/tokenized-checkout/refund/payment/status`          |
+//! | Refund           | POST   | `/tokenized/checkout/payment/refund`                    |
+//! | Refund Status    | POST   | `/tokenized/checkout/payment/refund/status`             |
 //!
 //! Each submodule covers a logical group of endpoints. See the
 //! [`crate::checkout`] module for the high-level client.

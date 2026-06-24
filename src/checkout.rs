@@ -224,7 +224,7 @@ impl<'a> CheckoutClient<'a> {
             .request(
                 Product::Checkout,
                 Method::POST,
-                "v2/tokenized-checkout/refund/payment/transaction",
+                "tokenized/checkout/payment/refund",
                 Some(&req),
             )
             .await
@@ -251,7 +251,7 @@ impl<'a> CheckoutClient<'a> {
             .request(
                 Product::Checkout,
                 Method::POST,
-                "v2/tokenized-checkout/refund/payment/status",
+                "tokenized/checkout/payment/refund/status",
                 Some(&req),
             )
             .await

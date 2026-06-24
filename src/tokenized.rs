@@ -360,7 +360,7 @@ impl<'a> TokenizedCheckoutClient<'a> {
             .request(
                 Product::Tokenized,
                 Method::POST,
-                "v2/tokenized-checkout/refund/payment/status",
+                "tokenized/checkout/payment/refund/status",
                 Some(&req),
             )
             .await
