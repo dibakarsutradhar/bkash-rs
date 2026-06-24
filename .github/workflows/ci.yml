@@ -43,8 +43,12 @@ jobs:
       - name: cargo test (all features, offline only)
         run: cargo test --all-features
 
-      - name: cargo doc (no deps, deny warnings)
-        run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+      # `--all-features` mirrors docs.rs (which builds with all features per
+      # `[package.metadata.docs.rs]`). Without it, intra-doc links into the
+      # `auth-capture` and `subscriptions` modules are unresolved because
+      # those modules are `#[cfg(feature = "...")]`-gated.
+      - name: cargo doc (all features, no deps, deny warnings)
+        run: RUSTDOCFLAGS="-D warnings" cargo doc --no-deps --all-features
 
       - name: cargo publish --dry-run
         run: cargo publish --dry-run --all-features
