@@ -9,14 +9,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Nothing yet. Changes to the README, CHANGELOG, and CONTRIBUTING docs
-  landed in this period; no functional code changed.
+- Nothing yet.
+
+## [0.2.0] — 2026-06-26
+
+First **published** release to crates.io. Builds on the `0.1.0`
+preview tag with documentation, CI, and packaging fixes required for
+publication.
+
+### Added
+
+- Initial crates.io publication as `bkash-rs` 0.2.0.
+
+### Changed
+
+- Documentation: full README rewrite with quickstart, feature flags,
+  sandbox vs production guidance, and API reference.
+- `CONTRIBUTING.md` expanded with build / test / fixture / live-test
+  sections and an endpoint recipe.
+- `Cargo.toml` author email corrected; examples included in the
+  published package.
+- CI workflow passes `--all-features` to `cargo doc`.
+
+### Fixed
+
+- License detection on GitHub (added explicit `LICENSE` pointer and
+  adjusted `LICENSE-APACHE` / `LICENSE-MIT`).
+- `auth_capture` and `tokenized-checkout` refund paths aligned with
+  bKash v1.2.0-beta docs.
+- `transport`: username/password headers now sent on every request.
 
 ## [0.1.0] — 2026-06-22
 
-First tagged preview. **Not published to crates.io** — the first
-publish (`0.2.0`) is gated on internal validation; see the "Roadmap /
-v0.2 publish" section of `README.md`.
+First tagged preview. **Not published to crates.io** — superseded by
+the `0.2.0` release for the first crates.io publication.
 
 ### Added
 
