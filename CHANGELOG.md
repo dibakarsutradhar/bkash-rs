@@ -11,6 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet.
 
+## [0.2.1] — 2026-06-26
+
+Patch release. No public API changes; only the docs.rs build is
+fixed so the published crate renders documentation correctly.
+
+### Fixed
+
+- docs.rs build: removed `#![cfg_attr(docsrs, feature(doc_cfg))]`
+  and the `#[cfg_attr(docsrs, doc(cfg(...)))]` annotations on
+  feature-gated modules and accessor methods. `doc(cfg(...))` and
+  `feature(doc_cfg)` are nightly-only, so docs.rs (stable Rust) was
+  crashing on the docs build and rendering an empty page.
+- `Cargo.toml`: dropped `rustdoc-args = ["--cfg", "docsrs", "-D",
+  "warnings"]` from `[package.metadata.docs.rs]`. docs.rs sets
+  `--cfg docsrs` automatically; the explicit injection activated
+  the nightly feature gate.
+
 ## [0.2.0] — 2026-06-26
 
 First **published** release to crates.io. Builds on the `0.1.0`

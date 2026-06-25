@@ -1,6 +1,6 @@
 [package]
 name = "bkash-rs"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 rust-version = "1.75"
 description = "Idiomatic async-first Rust client for the bKash Payment Gateway API."
