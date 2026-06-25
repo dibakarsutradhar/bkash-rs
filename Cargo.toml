@@ -11,7 +11,7 @@ homepage = "https://github.com/dibakarsutradhar/bkash-rs"
 documentation = "https://docs.rs/bkash-rs"
 readme = "README.md"
 keywords = ["bkash", "payments", "gateway", "bangladesh", "bdt"]
-categories = ["api-bindings", "asynchronous", "payments", "web-programming"]
+categories = ["api-bindings", "asynchronous", "finance", "web-programming"]
 include = [
     "src/**/*.rs",
     "examples/**/*.rs",
