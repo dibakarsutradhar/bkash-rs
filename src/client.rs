@@ -76,7 +76,6 @@ impl Bkash {
 
     /// Access the Tokenized Checkout product accessor.
     #[cfg(feature = "tokenized-checkout")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "tokenized-checkout")))]
     #[must_use]
     pub fn tokenized(&self) -> crate::tokenized::TokenizedCheckoutClient<'_> {
         crate::tokenized::TokenizedCheckoutClient::new(self)
@@ -84,7 +83,6 @@ impl Bkash {
 
     /// Access the URL-based Checkout product accessor.
     #[cfg(feature = "checkout")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "checkout")))]
     #[must_use]
     pub fn checkout(&self) -> crate::checkout::CheckoutClient<'_> {
         crate::checkout::CheckoutClient::new(self)
@@ -92,7 +90,6 @@ impl Bkash {
 
     /// Access the Auth & Capture product accessor.
     #[cfg(feature = "auth-capture")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "auth-capture")))]
     #[must_use]
     pub fn auth_capture(&self) -> crate::auth_capture::AuthCaptureClient<'_> {
         crate::auth_capture::AuthCaptureClient::new(self)
@@ -100,7 +97,6 @@ impl Bkash {
 
     /// Access the Subscriptions product accessor.
     #[cfg(feature = "subscriptions")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "subscriptions")))]
     #[must_use]
     pub fn subscriptions(&self) -> crate::subscriptions::SubscriptionsClient<'_> {
         crate::subscriptions::SubscriptionsClient::new(self)
