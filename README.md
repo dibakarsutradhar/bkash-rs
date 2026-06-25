@@ -66,7 +66,7 @@ plus webhook verification:
 
 ```toml
 [dependencies]
-bkash-rs = { version = "0.1", default-features = false, features = ["rustls-tls", "auth-capture", "webhooks"] }
+bkash-rs = { version = "0.2", default-features = false, features = ["rustls-tls", "auth-capture", "webhooks"] }
 ```
 
 ## Installation
@@ -75,7 +75,7 @@ Add to `Cargo.toml`:
 
 ```toml
 [dependencies]
-bkash-rs = "0.1"
+bkash-rs = "0.2"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 ```
 
@@ -331,15 +331,14 @@ breaking change and will require a minor version bump.
 
 ## Roadmap
 
-`bkash-rs` is on the `0.1.x` track. The 0.2 release will:
+`bkash-rs` is on the `0.2.x` track. The `0.2.0` release cut the first
+**crates.io publish** and locked the public API surface for the
+initial release. Semver is now meaningful: breaking changes will
+require a `0.3.0` bump, and additive changes will go into `0.2.x`.
 
-- Cut the first **crates.io publish**.
-- Lock the public API surface (semver starts mattering for real).
-- Drop any deprecation warnings introduced during 0.1.x.
-
-Until then, the API is permitted to evolve. See
-[`CHANGELOG.md`](CHANGELOG.md) for the current state, including all
-breaking-change notes between 0.1.x releases.
+Until `1.0`, the API is permitted to evolve within the `0.x` track.
+See [`CHANGELOG.md`](CHANGELOG.md) for the current state, including
+all breaking-change notes between releases.
 
 ## Contributing
 
